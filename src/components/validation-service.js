@@ -21,7 +21,7 @@ export default class ValidationService {
         }
     }
 
-    validateGroup(value) {
+    validateRole(value) {
         if (value) {
             return null
         } else {

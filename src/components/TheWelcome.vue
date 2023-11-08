@@ -11,7 +11,7 @@ export default {
       isActive: true,
       name: '',
       email: '',
-      role: { value: 0, name: '' },
+      role: null,
       password: '',
       repeatPassword: '',
       public:false,
@@ -21,7 +21,7 @@ export default {
       passwordError: null,
       repeatPasswordError: null,
 
-      valueDropdown: { name: 'Должность' },
+      valueDropdown: null,
       list: [
         { value: 1, name: "Бухгалтер" },
         { value: 2, name: "Менеджер" },
@@ -41,9 +41,8 @@ export default {
         return
       }
       else {
-        
         await axios.post('https://jsonplaceholder.typicode.com/posts', {
-          //public: this.public,
+          public: this.public,
           username: this.name,
           email: this.email,
           role: this.role.number,
@@ -57,7 +56,7 @@ export default {
     validateInputs() {
       this.nameError = validation.validateName(this.name)
       this.emailError = validation.validateEmail(this.email)
-      this.roleError = validation.validateGroup(this.role)
+      this.roleError = validation.validateRole(this.role)
       this.passwordError = validation.validatePassword(this.password)
       this.repeatPasswordError = validation.validateRepeatPassword(this.repeatPassword, this.password)
 
@@ -74,6 +73,7 @@ export default {
 
     makePublic() {
       this.public = !this.public;
+      console.log(this.public);
     },
 
     selectItem(option) {
@@ -106,17 +106,16 @@ export default {
             <input placeholder="Email" v-model="email" :class="{ errorinput: emailError !== null }">
             <span class="error-text" v-if="emailError">{{ emailError }}</span>
           </div>
-          <div class="role" :class="{ errorinput: roleError !== null }" @click="toggleDropdown()">
+          <div class="role" :class="{ 'errorinput': roleError }" @click="toggleDropdown()">
             <span class="error-text" v-if="roleError">{{ roleError }}</span>
             <div class="role__selectedItem" :data-value="valueDropdown" :data-list="list">
-
-              <div class="role__selector">
-                <div class="role__label" v-bind:class="{ 'placeholder-text': valueDropdown.name === 'Должность' }">
-                  {{ valueDropdown.name }}
+              <div class="role__selector" >
+                <div class="role__label" :class="{ 'placeholder-text': !valueDropdown }">
+                  {{ valueDropdown ? valueDropdown.name : 'Должность' }}
                 </div>
-                <div :class="{ hidden: !visible, visible }">
+                <div :class="{ hidden: !visible }">
                   <ul class="role__list">
-                    <li :class="{ current: item === valueDropdown }" v-for="item in list" @click="selectItem(item)">{{
+                    <li :class="{ 'current': item === valueDropdown }" v-for="item in list" @click="selectItem(item)">{{
                       item.name }}
                     </li>
                   </ul>
@@ -133,14 +132,12 @@ export default {
         </div>
       </div>
     </div>
-
     <div class="bottom-wrapper">
       <div class="checkbox">
-        <label class="checkbox__switch" @checked="() => this.public = true">
+        <label class="checkbox__switch" >
           <input type="checkbox" >
-          <span class="checkbox__slider"></span>
+          <span class="checkbox__slider" @click="makePublic"></span>
         </label>
-
         <div class="checkbox__content">
           <p class="checkbox__title">Хотите чтобы Ваш профиль видели другие участники платформы? </p>
           <p class="checkbox__text">Включает профиль для просмотра другими пользователями по ссылке</p>
@@ -159,8 +156,6 @@ export default {
       </div>
     </div>
   </div>
-
-
   <div v-else class="register-confirm">
     <p class="title">Регистрация успешно завершена</p>
   </div>
@@ -243,7 +238,6 @@ export default {
   cursor: pointer;
 }
 
-
 .role__selectedItem {
   position: relative;
   cursor: pointer;
@@ -290,7 +284,6 @@ export default {
   color: #9292A0;
 }
 
-
 .error-text {
   position: absolute;
   right: 0;
@@ -305,12 +298,10 @@ export default {
 
 .bottom-wrapper {
   padding: 23px 15px 0 31px;
-
 }
 
 .checkbox {
   display: flex;
-
 }
 
 .checkbox__switch {
@@ -412,7 +403,6 @@ input:checked+.checkbox__slider:before {
   gap: 70px;
   padding-top: 30px;
 }
-
 
 .oferta__text {
   padding-left: 14px;
